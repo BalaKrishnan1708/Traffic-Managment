@@ -1,0 +1,3026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Traffic Management System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Base Styles */
+    :root {
+      --primary: #00e676;
+      --primary-dark: #00c853;
+      --secondary: #2979ff;
+      --accent: #ff3d00;
+      --dark: #263238;
+      --light: #ffffff;
+      --gray: #eceff1;
+      --success: #00c853;
+      --warning: #ffd600;
+      --danger: #ff3d00;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--light);
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes slideInLeft {
+      from { transform: translateX(-100px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(100px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px rgba(0, 230, 118, 0.5); }
+      50% { box-shadow: 0 0 20px rgba(0, 230, 118, 0.8); }
+      100% { box-shadow: 0 0 5px rgba(0, 230, 118, 0.5); }
+    }
+
+    /* Header Styles */
+    header {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: var(--light);
+      padding: 20px 0;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    header.scrolled {
+      padding: 10px 0;
+      background: rgba(0, 200, 83, 0.95);
+      backdrop-filter: blur(10px);
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+      font-size: 24px;
+      color: var(--light);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      background-color: var(--light);
+      color: var(--primary);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 2s infinite;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+    }
+
+    nav a {
+      color: var(--light);
+      text-decoration: none;
+      font-weight: 500;
+      position: relative;
+      padding: 5px 0;
+      transition: all 0.3s ease;
+    }
+
+    nav a:hover {
+      color: var(--light);
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--light);
+      transition: width 0.3s ease;
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    .cta-button {
+      background-color: var(--light);
+      color: var(--primary);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      background-color: var(--light);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--light);
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #00796b, #009688);
+      color: var(--light);
+      padding: 180px 0 100px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgZmlsbD0idHJhbnNwYXJlbnQiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiLz48cmVjdCBmaWxsPSJ1cmwoI3BhdHRlcm4pIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIi8+PC9zdmc+');
+      opacity: 0.3;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .hero-text {
+      animation: fadeIn 1s ease-out;
+    }
+
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .primary-button {
+      background-color: var(--light);
+      color: var(--primary-dark);
+      border: none;
+      padding: 15px 30px;
+      border-radius: 30px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .primary-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .secondary-button {
+      background-color: transparent;
+      color: var(--light);
+      border: 2px solid var(--light);
+      padding: 15px 30px;
+      border-radius: 30px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .secondary-button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateY(-3px);
+    }
+
+    .hero-image {
+      position: relative;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .traffic-simulation {
+      width: 100%;
+      height: 350px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+
+    /* Features Section */
+    .features {
+      padding: 100px 0;
+      background-color: var(--light);
+      position: relative;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-title h2 {
+      font-size: 2.5rem;
+      color: var(--dark);
+      margin-bottom: 15px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      border-radius: 2px;
+    }
+
+    .section-title p {
+      color: #546e7a;
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .feature-card {
+      background-color: var(--light);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .feature-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 30px;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: var(--light);
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon {
+      transform: rotateY(180deg);
+    }
+
+    .feature-title {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: var(--dark);
+    }
+
+    .feature-description {
+      color: #546e7a;
+      line-height: 1.6;
+      flex-grow: 1;
+    }
+
+    /* How It Works Section */
+    .how-it-works {
+      padding: 100px 0;
+      background-color: var(--gray);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .how-it-works::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9InJnYmEoMCwwLDAsMC4wNSkiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IGZpbGw9InRyYW5zcGFyZW50IiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIi8+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==');
+      opacity: 0.5;
+    }
+
+    .technical-diagram {
+      background-color: var(--light);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 1;
+    }
+
+    .diagram-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .diagram-tab {
+      padding: 12px 20px;
+      background-color: var(--gray);
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--dark);
+    }
+
+    .diagram-tab.active {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: var(--light);
+    }
+
+    .diagram-tab:hover:not(.active) {
+      background-color: #e0e0e0;
+    }
+
+    .diagram-content {
+      display: none;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .diagram-content.active {
+      display: block;
+    }
+
+    .diagram-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+
+    .diagram-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background-color: rgba(0, 230, 118, 0.1);
+      color: var(--primary);
+    }
+
+    .diagram-title {
+      font-size: 1.5rem;
+      color: var(--dark);
+    }
+
+    .diagram-description {
+      color: #546e7a;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .diagram-visual {
+      background-color: var(--light);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 15px;
+      padding: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      text-align: center;
+    }
+
+    .diagram-visual-icon {
+      font-size: 64px;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+
+    .diagram-visual-text {
+      max-width: 500px;
+      color: #546e7a;
+      line-height: 1.6;
+    }
+
+    .diagram-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .diagram-nav-button {
+      padding: 10px 20px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      background-color: var(--light);
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .diagram-nav-button:hover {
+      background-color: var(--gray);
+    }
+
+    .diagram-nav-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Process Steps */
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 60px;
+    }
+
+    .process-step {
+      background-color: var(--light);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .process-step:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .step-number {
+      width: 30px;
+      height: 30px;
+      background-color: rgba(0, 230, 118, 0.1);
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .step-title {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: var(--dark);
+    }
+
+    .step-description {
+      color: #546e7a;
+      line-height: 1.6;
+    }
+
+    /* Dashboard Demo Section */
+    .dashboard-demo {
+      padding: 100px 0;
+      background-color: var(--light);
+    }
+
+    .dashboard-container {
+      background-color: var(--light);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-header {
+      background-color: var(--gray);
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .dashboard-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dashboard-control {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dashboard-control.red {
+      background-color: #ff5252;
+    }
+
+    .dashboard-control.yellow {
+      background-color: #ffeb3b;
+    }
+
+    .dashboard-control.green {
+      background-color: #4caf50;
+    }
+
+    .dashboard-title {
+      margin-left: 15px;
+      font-size: 0.9rem;
+      color: #546e7a;
+      font-weight: 500;
+    }
+
+    .dashboard-content {
+      padding: 30px;
+      min-height: 500px;
+      position: relative;
+    }
+
+    .dashboard-placeholder {
+      width: 100%;
+      height: 100%;
+      background-color: var(--gray);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #546e7a;
+      font-size: 1.1rem;
+    }
+
+     /* Cost Estimation Section */
+     .cost-estimation {
+        padding: 100px 0;
+        background: linear-gradient(135deg, #f5f7fa, #e4e8f0);
+        position: relative;
+        overflow: hidden;
+      }
+  
+      .cost-estimation::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9InJnYmEoMCwwLDAsMC4wMikiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IGZpbGw9InRyYW5zcGFyZW50IiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIi8+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==');
+        opacity: 0.5;
+      }
+  
+      .cost-container {
+        position: relative;
+        z-index: 1;
+      }
+  
+      .cost-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+      }
+  
+      .cost-card {
+        background-color: var(--light);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+  
+      .cost-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      }
+  
+      .cost-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+      }
+  
+      .cost-card:hover::before {
+        transform: scaleX(1);
+      }
+  
+      .cost-card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 15px;
+      }
+  
+      .cost-card-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        background-color: rgba(0, 230, 118, 0.1);
+        color: var(--primary);
+      }
+  
+      .cost-card-title {
+        font-size: 1.5rem;
+        color: var(--dark);
+      }
+  
+      .cost-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+  
+      .cost-item:last-child {
+        border-bottom: none;
+      }
+  
+      .cost-item-name {
+        color: #546e7a;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+  
+      .cost-item-quantity {
+        color: #90a4ae;
+        font-size: 0.9rem;
+      }
+  
+      .cost-item-price {
+        font-weight: 600;
+        color: var(--dark);
+      }
+  
+      .cost-total {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        color: var(--light);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+  
+      .cost-total-title {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+      }
+  
+      .cost-total-subtitle {
+        opacity: 0.8;
+        margin-bottom: 20px;
+      }
+  
+      .cost-total-amount {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+  
+      .cost-benefits {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 30px;
+      }
+  
+      .cost-benefits-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: var(--light);
+      }
+  
+      .cost-benefits-list {
+        list-style: none;
+      }
+  
+      .cost-benefits-list li {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+  
+      .cost-benefits-list li i {
+        color: var(--light);
+      }
+  
+     
+    /* Team Section */
+    .team {
+      padding: 100px 0;
+      background-color: var(--gray);
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .team-card {
+      background-color: var(--light);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .team-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .team-image {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 30px auto 20px;
+      background-color: var(--gray);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .team-image::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0, 230, 118, 0.3), rgba(41, 121, 255, 0.3));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .team-card:hover .team-image::after {
+      opacity: 1;
+    }
+
+    .team-name {
+      font-size: 1.5rem;
+      margin-bottom: 5px;
+      color: var(--dark);
+    }
+
+    .team-role {
+      color: #546e7a;
+      margin-bottom: 10px;
+    }
+
+    .team-institution {
+      font-size: 0.9rem;
+      color: #78909c;
+      margin-bottom: 5px;
+    }
+
+    .team-email {
+      font-size: 0.9rem;
+      color: #78909c;
+      margin-bottom: 30px;
+    }
+
+    /* Footer */
+    footer {
+      background-color: var(--dark);
+      color: var(--light);
+      padding: 80px 0 30px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      margin-bottom: 60px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+      font-size: 24px;
+      color: var(--light);
+      margin-bottom: 20px;
+    }
+
+    .footer-logo-icon {
+      background-color: var(--primary);
+      color: var(--light);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer-description {
+      color: #b0bec5;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .footer-heading {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: var(--light);
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .footer-heading::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background-color: var(--primary);
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+
+    .footer-links a {
+      color: #b0bec5;
+      text-decoration: none;
+      transition: color 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .footer-contact {
+      color: #b0bec5;
+      line-height: 1.6;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: #78909c;
+      font-size: 0.9rem;
+    }
+
+    /* Particles */
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Floating Elements */
+    .floating-element {
+      position: absolute;
+      opacity: 0.1;
+      z-index: 0;
+    }
+
+    .floating-1 {
+      top: 10%;
+      left: 5%;
+      font-size: 100px;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .floating-2 {
+      bottom: 10%;
+      right: 5%;
+      font-size: 80px;
+      animation: float 10s ease-in-out infinite;
+    }
+
+    .floating-3 {
+      top: 50%;
+      right: 10%;
+      font-size: 120px;
+      animation: float 12s ease-in-out infinite;
+    }
+
+    /* Traffic Light Widget Styles */
+    .traffic-light-widget {
+      width: 80px;
+      height: 250px;
+      position: relative;
+      margin: 0 auto;
+    }
+
+    .traffic-light-housing {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      width: 70px;
+      height: 240px;
+      background: linear-gradient(to bottom, #3c3c3c, #282828);
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .traffic-light {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #464646;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .traffic-light.red {
+      top: 20px;
+      left: 15px;
+    }
+
+    .traffic-light.yellow {
+      top: 100px;
+      left: 15px;
+    }
+
+    .traffic-light.green {
+      top: 180px;
+      left: 15px;
+    }
+
+    .traffic-light.active.red {
+      background: radial-gradient(circle at 40% 40%, #ff5050, #ff0000);
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+    }
+
+    .traffic-light.active.yellow {
+      background: radial-gradient(circle at 40% 40%, #ffff64, #ffff00);
+      box-shadow: 0 0 20px rgba(255, 255, 0, 0.6);
+    }
+
+    .traffic-light.active.green {
+      background: radial-gradient(circle at 40% 40%, #64ff64, #00ff00);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+    }
+
+    /* Smart Traffic Light System Styles */
+    .smart-traffic-system {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    .system-title {
+      color: #ffffff;
+      padding: 15px;
+      background: linear-gradient(to right, #0063b1, #0095ff);
+      border-radius: 10px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    .lanes-container {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .lane-box {
+      background-color: #3a3a3a;
+      border-radius: 10px;
+      padding: 15px;
+      width: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .lane-label {
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .lane-input {
+      background-color: #3a3a3a;
+      border: 2px solid #4a4a4a;
+      border-radius: 8px;
+      padding: 5px;
+      color: #ffffff;
+      width: 70px;
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    .lane-input:focus {
+      border: 2px solid #0078d7;
+      outline: none;
+    }
+
+    .emergency-container {
+      background-color: #3a3a3a;
+      border-radius: 10px;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .emergency-label {
+      color: #ff6b6b;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .emergency-dropdown {
+      background-color: #3a3a3a;
+      border: 2px solid #4a4a4a;
+      border-radius: 8px;
+      padding: 5px 10px;
+      color: #ffffff;
+      min-width: 120px;
+    }
+
+    .status-container {
+      background-color: #3a3a3a;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .timer-label {
+      color: #ffffff;
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .start-button {
+      background-color: #0095ff;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      border: none;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .start-button:hover {
+      background-color: #0078d7;
+    }
+
+    .start-button:active {
+      background-color: #0063b1;
+    }
+
+    .start-button:disabled {
+      background-color: #4a4a4a;
+      cursor: not-allowed;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+      .hero-content {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-image {
+        order: -1;
+      }
+
+      .traffic-simulation {
+        height: 300px;
+      }
+
+      .lanes-container {
+        gap: 15px;
+      }
+
+      .lane-box {
+        width: 140px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      nav {
+        position: fixed;
+        top: 80px;
+        left: 0;
+        width: 100%;
+        background-color: var(--primary-dark);
+        padding: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        transform: translateY(-150%);
+        transition: transform 0.3s ease;
+        z-index: 999;
+      }
+
+      nav.active {
+        transform: translateY(0);
+      }
+
+      nav ul {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .hero {
+        padding: 150px 0 80px;
+      }
+
+      .hero-title {
+        font-size: 2.5rem;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+      }
+
+      .section-title h2 {
+        font-size: 2rem;
+      }
+
+      .lanes-container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .lane-box {
+        width: 80%;
+      }
+
+      .emergency-container {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .diagram-tabs {
+        flex-direction: column;
+      }
+
+      .process-steps {
+        grid-template-columns: 1fr;
+      }
+
+      .lane-box {
+        width: 100%;
+      }
+    }
+
+    /* Preloader */
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .preloader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 5px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--primary);
+      animation: spin 1s infinite linear;
+    }
+
+    /* Cursor */
+    .custom-cursor {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: rgba(0, 230, 118, 0.3);
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s, background-color 0.3s;
+      display: none;
+    }
+
+    .custom-cursor.active {
+      display: block;
+    }
+
+    .custom-cursor.hover {
+      width: 50px;
+      height: 50px;
+      background-color: rgba(0, 230, 118, 0.1);
+    }
+
+    /* Scroll Progress */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 5px;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      z-index: 9999;
+      transition: width 0.1s;
+    }
+
+    /* Scroll to Top */
+    .scroll-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      background-color: var(--primary);
+      color: var(--light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 999;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .scroll-to-top.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .scroll-to-top:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <!-- Preloader -->
+  <div class="preloader" id="preloader">
+    <div class="loader"></div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div class="custom-cursor" id="custom-cursor"></div>
+
+  <!-- Scroll Progress -->
+  <div class="scroll-progress" id="scroll-progress"></div>
+
+  <!-- Scroll to Top -->
+  <div class="scroll-to-top" id="scroll-to-top">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+
+  <!-- Header -->
+  <header id="header">
+    <div class="container header-container">
+      <a href="#" class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-traffic-light"></i>
+        </div>
+        <span>SmartTraffic</span>
+      </a>
+      <nav id="nav">
+        <ul>
+          <li><a href="#features" class="nav-link">Features</a></li>
+          <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+          <li><a href="#dashboard" class="nav-link">Dashboard</a></li>
+          <li><a href="#simulator" class="nav-link">Simulator</a></li>
+          <li><a href="#cost-estimation" class="nav-link">Cost Estimation</a></li>
+
+          <li><a href="#team" class="nav-link">Team</a></li>
+        </ul>
+      </nav>
+      <a href="#simulator" class="cta-button">Try Simulator</a>
+      <button class="mobile-menu-btn" id="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="container hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">Smart Traffic Management for Sustainable Cities</h1>
+        <p class="hero-subtitle">An AI and IoT driven approach to optimize urban traffic, reduce congestion, and improve road safety.</p>
+        <div class="hero-buttons">
+          <a href="#features" class="primary-button">Explore Solution <i class="fas fa-arrow-right"></i></a>
+          <a href="#simulator" class="secondary-button">Try Simulator</a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <div class="traffic-simulation" id="traffic-simulation">
+          <!-- Traffic simulation will be rendered here by JavaScript -->
+        </div>
+      </div>
+    </div>
+    <div id="particles-js"></div>
+    <div class="floating-element floating-1">
+      <i class="fas fa-car"></i>
+    </div>
+    <div class="floating-element floating-2">
+      <i class="fas fa-traffic-light"></i>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-title">
+        <h2>Key Features</h2>
+        <p>Our Smart Traffic Management System leverages cutting-edge AI and IoT technologies to revolutionize urban mobility.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="feature-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3 class="feature-title">Real-time Traffic Analysis</h3>
+          <p class="feature-description">Continuous monitoring of traffic density and patterns using cameras and sensors for data-driven decisions.</p>
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="feature-icon">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <h3 class="feature-title">AI-Powered Optimization</h3>
+          <p class="feature-description">Proximal Policy Optimization (PPO) algorithm adapts signal timings in real-time for optimal traffic flow.</p>
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+          <div class="feature-icon">
+            <i class="fas fa-ambulance"></i>
+          </div>
+          <h3 class="feature-title">Emergency Vehicle Priority</h3>
+          <p class="feature-description">Automatic detection and prioritization of emergency vehicles to ensure rapid response times.</p>
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+          <div class="feature-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <h3 class="feature-title">Adaptive Signal Control</h3>
+          <p class="feature-description">Dynamic adjustment of traffic signals based on current conditions to minimize wait times.</p>
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
+          <div class="feature-icon">
+            <i class="fas fa-car"></i>
+          </div>
+          <h3 class="feature-title">YOLOv8 Vehicle Detection</h3>
+          <p class="feature-description">Advanced computer vision for accurate vehicle detection, classification, and counting.</p>
+        </div>
+
+        <div class="feature-card" data-aos="fade-up" data-aos-delay="600">
+          <div class="feature-icon">
+            <i class="fas fa-leaf"></i>
+          </div>
+          <h3 class="feature-title">Emissions Reduction</h3>
+          <p class="feature-description">Minimizes idle times and congestion, leading to reduced fuel consumption and carbon emissions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section-title">
+        <h2>How It Works</h2>
+        <p>Our system architecture integrates multiple technologies to create an intelligent traffic management solution.</p>
+      </div>
+
+      <div class="technical-diagram">
+        <div class="diagram-tabs" id="diagram-tabs">
+          <button class="diagram-tab active" data-tab="data-collection">
+            <i class="fas fa-camera"></i> Data Collection
+          </button>
+          <button class="diagram-tab" data-tab="data-processing">
+            <i class="fas fa-server"></i> Data Processing
+          </button>
+          <button class="diagram-tab" data-tab="ai-analysis">
+            <i class="fas fa-microchip"></i> AI Analysis
+          </button>
+          <button class="diagram-tab" data-tab="decision-making">
+            <i class="fas fa-chart-line"></i> Decision Making
+          </button>
+          <button class="diagram-tab" data-tab="emergency-detection">
+            <i class="fas fa-exclamation-triangle"></i> Emergency Detection
+          </button>
+          <button class="diagram-tab" data-tab="data-storage">
+            <i class="fas fa-database"></i> Data Storage
+          </button>
+          <button class="diagram-tab" data-tab="performance-monitoring">
+            <i class="fas fa-chart-bar"></i> Performance Monitoring
+          </button>
+        </div>
+
+        <div class="diagram-content active" id="data-collection">
+          <div class="diagram-header">
+            <div class="diagram-icon">
+              <i class="fas fa-camera"></i>
+            </div>
+            <h3 class="diagram-title">Data Collection</h3>
+          </div>
+          <p class="diagram-description">Traffic cameras and IoT sensors are strategically placed at intersections to collect real-time data on vehicle movement, density, and speed.</p>
+          <div class="diagram-visual">
+            <div>
+              <i class="fas fa-camera diagram-visual-icon"></i>
+              <p class="diagram-visual-text">Traffic cameras and IoT sensors are strategically placed at intersections to collect real-time data on vehicle movement, density, and speed. These sensors continuously monitor traffic conditions and transmit data to the processing servers.</p>
+            </div>
+          </div>
+          <div class="diagram-nav">
+            <button class="diagram-nav-button" disabled>
+              <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <button class="diagram-nav-button" data-next="data-processing">
+              Next <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="diagram-content" id="data-processing">
+          <div class="diagram-header">
+            <div class="diagram-icon">
+              <i class="fas fa-server"></i>
+            </div>
+            <h3 class="diagram-title">Data Processing</h3>
+          </div>
+          <p class="diagram-description">Video feeds are processed using YOLOv8 object detection to identify and count vehicles, determine their types, and track their movements through the intersection.</p>
+          <div class="diagram-visual">
+            <div>
+              <i class="fas fa-server diagram-visual-icon"></i>
+              <p class="diagram-visual-text">Video feeds are processed using YOLOv8 object detection to identify and count vehicles, determine their types, and track their movements through the intersection. This real-time processing enables accurate traffic density measurement and pattern recognition.</p>
+            </div>
+          </div>
+          <div class="diagram-nav">
+            <button class="diagram-nav-button" data-prev="data-collection">
+              <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <button class="diagram-nav-button" data-next="ai-analysis">
+              Next <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="diagram-content" id="ai-analysis">
+          <div class="diagram-header">
+            <div class="diagram-icon">
+              <i class="fas fa-microchip"></i>
+            </div>
+            <h3 class="diagram-title">AI Analysis</h3>
+          </div>
+          <p class="diagram-description">Reinforcement learning models analyze traffic patterns, predict congestion, and learn from historical data to improve traffic flow optimization over time.</p>
+          <div class="diagram-visual">
+            <div>
+              <i class="fas fa-microchip diagram-visual-icon"></i>
+              <p class="diagram-visual-text">Reinforcement learning models analyze traffic patterns, predict congestion, and learn from historical data to improve traffic flow optimization over time. The system continuously adapts its strategies based on changing traffic conditions and historical performance.</p>
+            </div>
+          </div>
+          <div class="diagram-nav">
+            <button class="diagram-nav-button" data-prev="data-processing">
+              <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <button class="diagram-nav-button" data-next="decision-making">
+              Next <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="diagram-content" id="decision-making">
+          <div class="diagram-header">
+            <div class="diagram-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3 class="diagram-title">Decision Making</h3>
+          </div>
+          <p class="diagram-description">The Proximal Policy Optimization (PPO) algorithm calculates optimal signal timings based on current traffic conditions and predicted future states.</p>
+          <div class="diagram-visual">
+            <div>
+              <i class="fas fa-chart-line diagram-visual-icon"></i>
+              <p class="diagram-visual-text">The Proximal Policy Optimization (PPO) algorithm calculates optimal signal timings based on current traffic conditions and predicted future states. This advanced reinforcement learning approach enables the system to make intelligent decisions that optimize traffic flow across multiple intersections.</p>
+            </div>
+          </div>
+          <div class="diagram-nav">
+            <button class="diagram-nav-button" data-prev="ai-analysis">
+              <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <button class="diagram-nav-button" data-next="emergency-detection">
+              Next <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="diagram-content" id="emergency-detection">
+          <div class="diagram-header">
+            <div class="diagram-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="diagram-title">Emergency Detection</h3>
+          </div>
+          <p class="diagram-description">Computer vision algorithms identify emergency vehicles and automatically adjust traffic signals to create a clear path, reducing response times.</p>
+          <div class="diagram-visual">
+            <div>
+              <i class="fas fa-exclamation-triangle diagram-visual-icon"></i>
+              <p class="diagram-visual-text">Computer vision algorithms identify emergency vehicles and automatically adjust traffic signals to create a clear path, reducing response times. This priority system ensures that ambulances, fire trucks, and police vehicles can navigate through traffic quickly during emergencies.</p>
+            </div>
+          </div>
+          <div class="diagram-nav">
+            <button class="diagram-nav-button" data-prev="decision-making">
+              <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <button class="diagram-nav-button" data-next="data-storage">
+              Next <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="diagram-content" id="data-storage">
+          <div class="diagram-header">
+            <div class="diagram-icon">
+              <i class="fas fa-database"></i>
+            </div>
+            <h3 class="diagram-title">Data Storage</h3>
+          </div>
+          <p class="diagram-description">Traffic patterns, signal timing effectiveness, and system performance metrics are stored in a database for continuous learning and improvement.</p>
+          <div class="diagram-visual">
+            <div>
+              <i class="fas fa-database diagram-visual-icon"></i>
+              <p class="diagram-visual-text">Traffic patterns, signal timing effectiveness, and system performance metrics are stored in a database for continuous learning and improvement. This historical data enables the system to identify trends, optimize algorithms, and generate insights for urban planning.</p>
+            </div>
+          </div>
+          <div class="diagram-nav">
+            <button class="diagram-nav-button" data-prev="emergency-detection">
+              <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <button class="diagram-nav-button" data-next="performance-monitoring">
+              Next <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="diagram-content" id="performance-monitoring">
+          <div class="diagram-header">
+            <div class="diagram-icon">
+              <i class="fas fa-chart-bar"></i>
+            </div>
+            <h3 class="diagram-title">Performance Monitoring</h3>
+          </div>
+          <p class="diagram-description">The system continuously monitors its performance, analyzing metrics like wait times, throughput, and emissions reduction to optimize its algorithms.</p>
+          <div class="diagram-visual">
+            <div>
+              <i class="fas fa-chart-bar diagram-visual-icon"></i>
+              <p class="diagram-visual-text">The system continuously monitors its performance, analyzing metrics like wait times, throughput, and emissions reduction to optimize its algorithms. This feedback loop ensures that the traffic management system becomes more effective over time through continuous improvement.</p>
+            </div>
+          </div>
+          <div class="diagram-nav">
+            <button class="diagram-nav-button" data-prev="data-storage">
+              <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <button class="diagram-nav-button" disabled>
+              Next <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="process-steps">
+        <div class="process-step" data-aos="fade-up" data-aos-delay="100">
+          <div class="step-number">1</div>
+          <h3 class="step-title">Data Collection</h3>
+          <p class="step-description">Cameras and IoT sensors collect real-time traffic data, which is processed using YOLOv8 for vehicle detection.</p>
+        </div>
+        <div class="process-step" data-aos="fade-up" data-aos-delay="200">
+          <div class="step-number">2</div>
+          <h3 class="step-title">AI Processing</h3>
+          <p class="step-description">Reinforcement learning models analyze traffic patterns and predict optimal signal timings using PPO algorithm.</p>
+        </div>
+        <div class="process-step" data-aos="fade-up" data-aos-delay="300">
+          <div class="step-number">3</div>
+          <h3 class="step-title">Signal Execution</h3>
+          <p class="step-description">Traffic signals are dynamically adjusted based on AI recommendations, prioritizing emergency vehicles when needed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dashboard Demo Section -->
+  <section class="dashboard-demo" id="dashboard">
+    <div class="container">
+      <div class="section-title">
+        <h2>Interactive Dashboard</h2>
+        <p>Experience our traffic management system through this interactive dashboard demonstration.</p>
+      </div>
+
+      <div class="dashboard-container">
+        <div class="dashboard-header">
+          <div class="dashboard-controls">
+            <div class="dashboard-control red"></div>
+            <div class="dashboard-control yellow"></div>
+            <div class="dashboard-control green"></div>
+          </div>
+          <div class="dashboard-title">Traffic Management Dashboard</div>
+        </div>
+        <div class="dashboard-content">
+          <canvas id="dashboard-canvas" width="1000" height="500"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Traffic Light Simulator Section -->
+  <section class="dashboard-demo" id="simulator">
+    <div class="container">
+      <div class="section-title">
+        <h2>Traffic Light Simulator</h2>
+        <p>Try our interactive traffic light simulator to see how the system optimizes traffic flow based on vehicle density.</p>
+      </div>
+
+      <div class="smart-traffic-system">
+        <div class="system-title">Smart Traffic Light System</div>
+        
+        <div class="lanes-container">
+          <div class="lane-box">
+            <div class="lane-label">Lane 1</div>
+            <input type="number" class="lane-input" id="lane1-input" placeholder="0" min="0" max="100">
+            <div class="traffic-light-widget">
+              <div class="traffic-light-housing"></div>
+              <div class="traffic-light red" id="lane1-red"></div>
+              <div class="traffic-light yellow" id="lane1-yellow"></div>
+              <div class="traffic-light green" id="lane1-green"></div>
+            </div>
+          </div>
+          
+          <div class="lane-box">
+            <div class="lane-label">Lane 2</div>
+            <input type="number" class="lane-input" id="lane2-input" placeholder="0" min="0" max="100">
+            <div class="traffic-light-widget">
+              <div class="traffic-light-housing"></div>
+              <div class="traffic-light red" id="lane2-red"></div>
+              <div class="traffic-light yellow" id="lane2-yellow"></div>
+              <div class="traffic-light green" id="lane2-green"></div>
+            </div>
+          </div>
+          
+          <div class="lane-box">
+            <div class="lane-label">Lane 3</div>
+            <input type="number" class="lane-input" id="lane3-input" placeholder="0" min="0" max="100">
+            <div class="traffic-light-widget">
+              <div class="traffic-light-housing"></div>
+              <div class="traffic-light red" id="lane3-red"></div>
+              <div class="traffic-light yellow" id="lane3-yellow"></div>
+              <div class="traffic-light green" id="lane3-green"></div>
+            </div>
+          </div>
+          
+          <div class="lane-box">
+            <div class="lane-label">Lane 4</div>
+            <input type="number" class="lane-input" id="lane4-input" placeholder="0" min="0" max="100">
+            <div class="traffic-light-widget">
+              <div class="traffic-light-housing"></div>
+              <div class="traffic-light red" id="lane4-red"></div>
+              <div class="traffic-light yellow" id="lane4-yellow"></div>
+              <div class="traffic-light green" id="lane4-green"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="emergency-container">
+          <div class="emergency-label">🚨 Emergency Vehicle in Lane:</div>
+          <select class="emergency-dropdown" id="emergency-dropdown">
+            <option value="none">None</option>
+            <option value="lane1">Lane 1</option>
+            <option value="lane2">Lane 2</option>
+            <option value="lane3">Lane 3</option>
+            <option value="lane4">Lane 4</option>
+          </select>
+        </div>
+        
+        <div class="status-container">
+          <div class="timer-label" id="timer-label">⏳ Time Left: 10s</div>
+          <button class="start-button" id="start-button">🚦 Start Simulation</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cost Estimation Section -->
+  <section class="cost-estimation" id="cost-estimation">
+    <div class="container cost-container">
+      <div class="section-title">
+        <h2>Cost Estimation</h2>
+        <p>Detailed breakdown of implementation costs for a standard four-way intersection deployment in Indian Rupees.</p>
+      </div>
+
+      <div class="cost-cards">
+        <div class="cost-card">
+          <div class="cost-card-header">
+            <div class="cost-card-icon">
+              <i class="fas fa-microchip"></i>
+            </div>
+            <h3 class="cost-card-title">Hardware</h3>
+          </div>
+          
+          <div class="cost-item">
+            <div class="cost-item-name">
+              <i class="fas fa-camera"></i> Traffic Cameras
+              <span class="cost-item-quantity">(16 units)</span>
+            </div>
+            <div class="cost-item-price">₹2,40,000</div>
+          </div>
+          
+          <div class="cost-item">
+            <div class="cost-item-name">
+              <i class="fas fa-wifi"></i> IoT Sensors
+              <span class="cost-item-quantity">(32 units)</span>
+            </div>
+            <div class="cost-item-price">₹1,60,000</div>
+          </div>
+          
+          <div class="cost-item">
+            <div class="cost-item-name">
+              <i class="fas fa-traffic-light"></i> Signal Controllers
+              <span class="cost-item-quantity">(4 units)</span>
+            </div>
+            <div class="cost-item-price">₹80,000</div>
+        </div>
+        
+        <div class="cost-item">
+          <div class="cost-item-name">
+            <i class="fas fa-server"></i> Edge Computing Nodes
+            <span class="cost-item-quantity">(2 units)</span>
+          </div>
+          <div class="cost-item-price">₹1,20,000</div>
+        </div>
+        
+        <div class="cost-item">
+          <div class="cost-item-name">
+            <i class="fas fa-hdd"></i> Storage Devices
+            <span class="cost-item-quantity">(2 units)</span>
+          </div>
+          <div class="cost-item-price">₹60,000</div>
+        </div>
+      </div>
+
+      <div class="cost-card">
+        <div class="cost-card-header">
+          <div class="cost-card-icon">
+            <i class="fas fa-code"></i>
+          </div>
+          <h3 class="cost-card-title">Software</h3>
+        </div>
+        
+        <div class="cost-item">
+          <div class="cost-item-name">
+            <i class="fas fa-robot"></i> AI Traffic Model
+          </div>
+          <div class="cost-item-price">₹3,50,000</div>
+        </div>
+        
+        <div class="cost-item">
+          <div class="cost-item-name">
+            <i class="fas fa-desktop"></i> Dashboard System
+          </div>
+          <div class="cost-item-price">₹1,20,000</div>
+        </div>
+        
+        <div class="cost-item">
+          <div class="cost-item-name">
+            <i class="fas fa-mobile-alt"></i> Mobile App
+          </div>
+          <div class="cost-item-price">₹80,000</div>
+        </div>
+        
+        <div class="cost-item">
+          <div class="cost-item-name">
+            <i class="fas fa-database"></i> Database System
+          </div>
+          <div class="cost-item-price">₹90,000</div>
+        </div>
+        
+        <div class="cost-item">
+          <div class="cost-item-name">
+            <i class="fas fa-shield-alt"></i> Security Software
+          </div>
+          <div class="cost-item-price">₹60,000</div>
+        </div>
+      </div>
+
+      <div class="cost-card">
+        <div class="cost-card-header">
+          <div class="cost-card-icon">
+            <i class="fas fa-tools"></i>
+          </div>
+          <h3 class="cost-card-title">Installation & Maintenance</h3>
+        </div>
+        
+        <div class="cost-item">
+          <div class="cost-item-name">
+            <i class="fas fa-truck"></i> Equipment Transportation
+          </div>
+          <div class="cost-item-price">₹30,000</div>
+        </div>
+        
+        <div class="cost-item">
+          <div class="cost-item-name">
+            <i class="fas fa-hard-hat"></i> Installation Labor
+          </div>
+          <div class="cost-item-price">₹1,50,000</div>
+        </div>
+        
+        <div class="cost-item">
+          <div class="cost-item-name">
+            <i class="fas fa-network-wired"></i> Network Setup
+          </div>
+          <div class="cost-item-price">₹80,000</div>
+        </div>
+        
+        <div class="cost-item">
+          <div class="cost-item-name">
+            <i class="fas fa-user-cog"></i> Training
+          </div>
+          <div class="cost-item-price">₹50,000</div>
+        </div>
+        
+        <div class="cost-item">
+          <div class="cost-item-name">
+            <i class="fas fa-wrench"></i> Annual Maintenance
+          </div>
+          <div class="cost-item-price">₹2,00,000</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cost-total">
+      <h3 class="cost-total-title">Total Estimated Cost</h3>
+      <p class="cost-total-subtitle">For a standard four-way intersection deployment</p>
+      <div class="cost-total-amount">₹16,50,000</div>
+      
+      <div class="cost-benefits">
+        <h4 class="cost-benefits-title">Key Benefits Justifying the Investment</h4>
+        <ul class="cost-benefits-list">
+          <li><i class="fas fa-check-circle"></i> 30-40% reduction in traffic congestion</li>
+          <li><i class="fas fa-check-circle"></i> 20-25% decrease in average commute time</li>
+          <li><i class="fas fa-check-circle"></i> 15-20% reduction in vehicle emissions</li>
+          <li><i class="fas fa-check-circle"></i> Improved emergency response times</li>
+          <li><i class="fas fa-check-circle"></i> 3-5 year return on investment</li>
+        </ul>
+      </div>
+    </div>
+
+    
+
+  <!-- Team Section -->
+  <section class="team" id="team">
+    <div class="container">
+      <div class="section-title">
+        <h2>Research Team</h2>
+        <p>Meet the talented researchers behind this innovative traffic management solution.</p>
+      </div>
+
+      <div class="team-grid">
+        <div class="team-card" data-aos="fade-up" data-aos-delay="100">
+            <style>
+                .team-image {
+                  width: 200px;              /* Circle diameter */
+                  height: 200px;
+                  border-radius: 50%;        /* Makes it circular */
+                  overflow: hidden;          /* Hides the image outside the circle */
+                  display: flex;
+                  justify-content: center;   /* Horizontal centering */
+                  align-items: center;       /* Vertical centering */
+                  margin: auto;              /* Center the circle in the parent */
+                  border: 3px solid #ccc;    /* Optional: border */
+                }
+              
+                .team-image img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;         /* Crop to fit the circle */
+                }
+              </style>
+              
+              <div class="team-image">
+                <img src="mani.jpg" alt="Team Member">
+              </div>
+                        <h3 class="team-name">Alagu Manikandan S</h3>
+          <p class="team-role">Artificial Intelligence and Data Science</p>
+          <p class="team-institution">Sri Venkateswara College of Engineering, Chennai</p>
+          <p class="team-email">2023ad0007@svce.ac.in</p>
+        </div>
+        <div class="team-card" data-aos="fade-up" data-aos-delay="200">
+            <style>
+                .team-image {
+                  width: 200px;              /* Circle diameter */
+                  height: 200px;
+                  border-radius: 50%;        /* Makes it circular */
+                  overflow: hidden;          /* Hides the image outside the circle */
+                  display: flex;
+                  justify-content: center;   /* Horizontal centering */
+                  align-items: center;       /* Vertical centering */
+                  margin: auto;              /* Center the circle in the parent */
+                  border: 3px solid #ccc;    /* Optional: border */
+                }
+              
+                .team-image img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;         /* Crop to fit the circle */
+                }
+              </style>
+              
+              <div class="team-image">
+                <img src="bala.jpg" alt="Team Member">
+              </div>
+                        <h3 class="team-name">Balakrishnan R</h3>
+          <p class="team-role">Artificial Intelligence and Data Science</p>
+          <p class="team-institution">Sri Venkateswara College of Engineering, Chennai</p>
+          <p class="team-email">2023ad0681@svce.ac.in</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo">
+            <div class="footer-logo-icon">
+              <i class="fas fa-traffic-light"></i>
+            </div>
+            <span>SmartTraffic</span>
+          </div>
+          <p class="footer-description">AI and IoT driven approach to urban traffic optimization for sustainable cities.</p>
+        </div>
+        <div>
+          <h3 class="footer-heading">Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="#features"><i class="fas fa-chevron-right"></i> Features</a></li>
+            <li><a href="#how-it-works"><i class="fas fa-chevron-right"></i> How It Works</a></li>
+            <li><a href="#dashboard"><i class="fas fa-chevron-right"></i> Dashboard</a></li>
+            <li><a href="#simulator"><i class="fas fa-chevron-right"></i> Simulator</a></li>
+            <li><a href="#team"><i class="fas fa-chevron-right"></i> Team</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-heading">Contact</h3>
+          <p class="footer-contact">
+            Sri Venkateswara College of Engineering<br>
+            Chennai – 602 117<br>
+            India
+          </p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <span id="current-year"></span> Smart Traffic Management System. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+    // Current Year
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+
+    // Preloader
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        document.getElementById('preloader').classList.add('hidden');
+      }, 500);
+    });
+
+    // Mobile Menu
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const nav = document.getElementById('nav');
+    
+    mobileMenuBtn.addEventListener('click', function() {
+      nav.classList.toggle('active');
+      mobileMenuBtn.innerHTML = nav.classList.contains('active') ? 
+        '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+    });
+
+    // Close mobile menu when clicking on a nav link
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        nav.classList.remove('active');
+        mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+      });
+    });
+
+    // Scroll Progress
+    window.addEventListener('scroll', function() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.body.offsetHeight - window.innerHeight;
+      const scrollPercent = (scrollTop / docHeight) * 100;
+      document.getElementById('scroll-progress').style.width = scrollPercent + '%';
+      
+      // Header scroll effect
+      const header = document.getElementById('header');
+      if (scrollTop > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+      
+      // Scroll to top button
+      const scrollToTopBtn = document.getElementById('scroll-to-top');
+      if (scrollTop > 300) {
+        scrollToTopBtn.classList.add('active');
+      } else {
+        scrollToTopBtn.classList.remove('active');
+      }
+    });
+
+    // Scroll to top
+    document.getElementById('scroll-to-top').addEventListener('click', function() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          window.scrollTo({
+            top: target.offsetTop - 80,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // Diagram Tabs
+    const diagramTabs = document.querySelectorAll('.diagram-tab');
+    diagramTabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        // Remove active class from all tabs
+        diagramTabs.forEach(t => t.classList.remove('active'));
+        // Add active class to clicked tab
+        this.classList.add('active');
+        
+        // Hide all content
+        const contents = document.querySelectorAll('.diagram-content');
+        contents.forEach(content => content.classList.remove('active'));
+        
+        // Show selected content
+        const tabId = this.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    // Diagram Navigation
+    document.querySelectorAll('.diagram-nav-button[data-next]').forEach(button => {
+      button.addEventListener('click', function() {
+        const nextTabId = this.getAttribute('data-next');
+        const nextTab = document.querySelector(`.diagram-tab[data-tab="${nextTabId}"]`);
+        if (nextTab) {
+          nextTab.click();
+        }
+      });
+    });
+
+    document.querySelectorAll('.diagram-nav-button[data-prev]').forEach(button => {
+      button.addEventListener('click', function() {
+        const prevTabId = this.getAttribute('data-prev');
+        const prevTab = document.querySelector(`.diagram-tab[data-tab="${prevTabId}"]`);
+        if (prevTab) {
+          prevTab.click();
+        }
+      });
+    });
+
+    // Traffic Simulation in Hero Section
+    const trafficSimulation = document.getElementById('traffic-simulation');
+    const trafficCanvas = document.createElement('canvas');
+    trafficCanvas.width = trafficSimulation.offsetWidth;
+    trafficCanvas.height = trafficSimulation.offsetHeight;
+    trafficSimulation.appendChild(trafficCanvas);
+    
+    const ctx = trafficCanvas.getContext('2d');
+    
+    // Car class for simulation
+    class Car {
+      constructor(x, y, width, height, speed, color) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.speed = speed;
+        this.color = color;
+      }
+      
+      update() {
+        this.x += this.speed;
+        if (this.x > trafficCanvas.width + 50) {
+          this.x = -this.width - 50;
+        }
+      }
+      
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+        
+        // Car windows
+        ctx.fillStyle = '#333';
+        ctx.fillRect(this.x + this.width * 0.2, this.y, this.width * 0.3, this.height);
+        ctx.fillRect(this.x + this.width * 0.6, this.y, this.width * 0.3, this.height);
+        
+        // Car lights
+        ctx.fillStyle = '#ffff00';
+        ctx.fillRect(this.x + this.width - 2, this.y + 2, 2, 2);
+        ctx.fillRect(this.x + this.width - 2, this.y + this.height - 4, 2, 2);
+        
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(this.x, this.y + 2, 2, 2);
+        ctx.fillRect(this.x, this.y + this.height - 4, 2, 2);
+      }
+    }
+    
+    // Create roads
+    function drawRoads() {
+      // Background
+      ctx.fillStyle = '#1a3c40';
+      ctx.fillRect(0, 0, trafficCanvas.width, trafficCanvas.height);
+      
+      // Roads
+      ctx.fillStyle = '#333';
+      ctx.fillRect(0, trafficCanvas.height * 0.25 - 15, trafficCanvas.width, 30);
+      ctx.fillRect(0, trafficCanvas.height * 0.5 - 15, trafficCanvas.width, 30);
+      ctx.fillRect(0, trafficCanvas.height * 0.75 - 15, trafficCanvas.width, 30);
+      
+      // Road markings
+      ctx.strokeStyle = '#fff';
+      ctx.setLineDash([20, 20]);
+      ctx.beginPath();
+      ctx.moveTo(0, trafficCanvas.height * 0.25);
+      ctx.lineTo(trafficCanvas.width, trafficCanvas.height * 0.25);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(0, trafficCanvas.height * 0.5);
+      ctx.lineTo(trafficCanvas.width, trafficCanvas.height * 0.5);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(0, trafficCanvas.height * 0.75);
+      ctx.lineTo(trafficCanvas.width, trafficCanvas.height * 0.75);
+      ctx.stroke();
+      
+      ctx.setLineDash([]);
+    }
+    
+    // Create cars
+    const cars = [];
+    const carColors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c'];
+    
+    for (let i = 0; i < 15; i++) {
+      const road = Math.floor(Math.random() * 3);
+      const y = trafficCanvas.height * (0.25 + road * 0.25) - 10;
+      const width = 30 + Math.random() * 20;
+      const height = 15;
+      const speed = 0.5 + Math.random() * 2;
+      const color = carColors[Math.floor(Math.random() * carColors.length)];
+      const x = Math.random() * trafficCanvas.width;
+      
+      cars.push(new Car(x, y, width, height, speed, color));
+    }
+    
+    // Animation loop
+    function animate() {
+      ctx.clearRect(0, 0, trafficCanvas.width, trafficCanvas.height);
+      
+      drawRoads();
+      
+      cars.forEach(car => {
+        car.update();
+        car.draw();
+      });
+      
+      requestAnimationFrame(animate);
+    }
+    
+    animate();
+
+    // Dashboard Canvas
+    const dashboardCanvas = document.getElementById('dashboard-canvas');
+    const dashCtx = dashboardCanvas.getContext('2d');
+    
+    function drawDashboard() {
+      // Clear canvas
+      dashCtx.clearRect(0, 0, dashboardCanvas.width, dashboardCanvas.height);
+      
+      // Background
+      dashCtx.fillStyle = '#f5f5f5';
+      dashCtx.fillRect(0, 0, dashboardCanvas.width, dashboardCanvas.height);
+      
+      // Grid lines
+      dashCtx.strokeStyle = '#e0e0e0';
+      dashCtx.lineWidth = 1;
+      
+      // Vertical grid lines
+      for (let i = 0; i <= 10; i++) {
+        const x = i * (dashboardCanvas.width / 10);
+        dashCtx.beginPath();
+        dashCtx.moveTo(x, 0);
+        dashCtx.lineTo(x, dashboardCanvas.height);
+        dashCtx.stroke();
+      }
+      
+      // Horizontal grid lines
+      for (let i = 0; i <= 10; i++) {
+        const y = i * (dashboardCanvas.height / 10);
+        dashCtx.beginPath();
+        dashCtx.moveTo(0, y);
+        dashCtx.lineTo(dashboardCanvas.width, y);
+        dashCtx.stroke();
+      }
+      
+      // Draw intersection
+      const centerX = dashboardCanvas.width / 2;
+      const centerY = dashboardCanvas.height / 2;
+      
+      // Roads
+      dashCtx.fillStyle = '#333';
+      dashCtx.fillRect(0, centerY - 50, dashboardCanvas.width, 100);
+      dashCtx.fillRect(centerX - 50, 0, 100, dashboardCanvas.height);
+      
+      // Road markings
+      dashCtx.strokeStyle = '#fff';
+      dashCtx.setLineDash([20, 20]);
+      
+      dashCtx.beginPath();
+      dashCtx.moveTo(0, centerY);
+      dashCtx.lineTo(dashboardCanvas.width, centerY);
+      dashCtx.stroke();
+      
+      dashCtx.beginPath();
+      dashCtx.moveTo(centerX, 0);
+      dashCtx.lineTo(centerX, dashboardCanvas.height);
+      dashCtx.stroke();
+      
+      dashCtx.setLineDash([]);
+      
+      // Traffic lights
+      drawTrafficLight(centerX - 70, centerY - 70, 0); // Top left
+      drawTrafficLight(centerX + 70, centerY - 70, 1); // Top right
+      drawTrafficLight(centerX + 70, centerY + 70, 2); // Bottom right
+      drawTrafficLight(centerX - 70, centerY + 70, 3); // Bottom left
+      
+      // Traffic data
+      drawTrafficData();
+      
+      // Cars
+      drawDashboardCars();
+    }
+    
+    function drawTrafficLight(x, y, state) {
+      // Housing
+      dashCtx.fillStyle = '#222';
+      dashCtx.fillRect(x - 10, y - 30, 20, 60);
+      
+      // Lights
+      const states = [
+        [1, 0, 0], // Red
+        [1, 1, 0], // Red-Yellow
+        [0, 0, 1], // Green
+        [0, 1, 0]  // Yellow
+      ];
+      
+      const currentState = states[state];
+      
+      // Red light
+      dashCtx.fillStyle = currentState[0] ? '#ff0000' : '#550000';
+      dashCtx.beginPath();
+      dashCtx.arc(x, y - 20, 6, 0, Math.PI * 2);
+      dashCtx.fill();
+      
+      // Yellow light
+      dashCtx.fillStyle = currentState[1] ? '#ffff00' : '#555500';
+      dashCtx.beginPath();
+      dashCtx.arc(x, y, 6, 0, Math.PI * 2);
+      dashCtx.fill();
+      
+      // Green light
+      dashCtx.fillStyle = currentState[2] ? '#00ff00' : '#005500';
+      dashCtx.beginPath();
+      dashCtx.arc(x, y + 20, 6, 0, Math.PI * 2);
+      dashCtx.fill();
+    }
+    
+    function drawTrafficData() {
+      const centerX = dashboardCanvas.width / 2;
+      const centerY = dashboardCanvas.height / 2;
+      
+      // Traffic density indicators
+      dashCtx.font = '14px Arial';
+      dashCtx.fillStyle = '#333';
+      
+      // North
+      dashCtx.fillText('Traffic Density: 78%', centerX + 120, centerY - 100);
+      drawProgressBar(centerX + 120, centerY - 80, 150, 15, 78);
+      
+      // East
+      dashCtx.fillText('Traffic Density: 45%', centerX + 120, centerY + 100);
+      drawProgressBar(centerX + 120, centerY + 120, 150, 15, 45);
+      
+      // South
+      dashCtx.fillText('Traffic Density: 92%', centerX - 270, centerY + 100);
+      drawProgressBar(centerX - 270, centerY + 120, 150, 15, 92);
+      
+      // West
+      dashCtx.fillText('Traffic Density: 23%', centerX - 270, centerY - 100);
+      drawProgressBar(centerX - 270, centerY - 80, 150, 15, 23);
+      
+      // System status
+      dashCtx.fillStyle = '#00796b';
+      dashCtx.font = 'bold 18px Arial';
+      dashCtx.fillText('System Status: Operational', 50, 50);
+      
+      // Current optimization
+      dashCtx.fillStyle = '#333';
+      dashCtx.font = '16px Arial';
+      dashCtx.fillText('Current Optimization: Prioritizing South-North Flow', 50, 80);
+      
+      // Emergency vehicle status
+      dashCtx.fillStyle = '#e53935';
+      dashCtx.fillText('Emergency Vehicle Detected: None', 50, 110);
+      
+      // Statistics
+      dashCtx.fillStyle = '#333';
+      dashCtx.fillText('Average Wait Time: 42s', dashboardCanvas.width - 250, 50);
+      dashCtx.fillText('Vehicles Processed: 1,248', dashboardCanvas.width - 250, 80);
+      dashCtx.fillText('Efficiency Rating: 87%', dashboardCanvas.width - 250, 110);
+    }
+    
+    function drawProgressBar(x, y, width, height, percentage) {
+      // Background
+      dashCtx.fillStyle = '#e0e0e0';
+      dashCtx.fillRect(x, y, width, height);
+      
+      // Progress
+      let color;
+      if (percentage < 30) {
+        color = '#4caf50'; // Green
+      } else if (percentage < 70) {
+        color = '#ff9800'; // Orange
+      } else {
+        color = '#f44336'; // Red
+      }
+      
+      dashCtx.fillStyle = color;
+      dashCtx.fillRect(x, y, width * (percentage / 100), height);
+      
+      // Percentage text
+      dashCtx.fillStyle = '#333';
+      dashCtx.font = '12px Arial';
+      dashCtx.fillText(`${percentage}%`, x + width / 2 - 15, y + height / 2 + 4);
+    }
+    
+    // Dashboard cars
+    const dashboardCars = [];
+    
+    class DashboardCar {
+      constructor(x, y, direction, color) {
+        this.x = x;
+        this.y = y;
+        this.direction = direction; // 0: right, 1: down, 2: left, 3: up
+        this.color = color;
+        this.width = 20;
+        this.height = 10;
+        this.speed = 1 + Math.random() * 1.5;
+      }
+      
+      update() {
+        switch (this.direction) {
+          case 0: // Right
+            this.x += this.speed;
+            if (this.x > dashboardCanvas.width + 30) {
+              this.x = -30;
+            }
+            break;
+          case 1: // Down
+            this.y += this.speed;
+            if (this.y > dashboardCanvas.height + 30) {
+              this.y = -30;
+            }
+            break;
+          case 2: // Left
+            this.x -= this.speed;
+            if (this.x < -30) {
+              this.x = dashboardCanvas.width + 30;
+            }
+            break;
+          case 3: // Up
+            this.y -= this.speed;
+            if (this.y < -30) {
+              this.y = dashboardCanvas.height + 30;
+            }
+            break;
+        }
+      }
+      
+      draw() {
+        dashCtx.save();
+        dashCtx.translate(this.x, this.y);
+        
+        if (this.direction === 1 || this.direction === 3) {
+          dashCtx.rotate(Math.PI / 2);
+        }
+        
+        // Car body
+        dashCtx.fillStyle = this.color;
+        dashCtx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+        
+        // Car windows
+        dashCtx.fillStyle = '#333';
+        dashCtx.fillRect(-this.width * 0.3, -this.height / 2, this.width * 0.6, this.height);
+        
+        // Car lights
+        if (this.direction === 0 || this.direction === 1) {
+          dashCtx.fillStyle = '#ffff00';
+          dashCtx.fillRect(this.width / 2 - 2, -this.height / 2 + 1, 2, 2);
+          dashCtx.fillRect(this.width / 2 - 2, this.height / 2 - 3, 2, 2);
+          
+          dashCtx.fillStyle = '#ff0000';
+          dashCtx.fillRect(-this.width / 2, -this.height / 2 + 1, 2, 2);
+          dashCtx.fillRect(-this.width / 2, this.height / 2 - 3, 2, 2);
+        } else {
+          dashCtx.fillStyle = '#ff0000';
+          dashCtx.fillRect(this.width / 2 - 2, -this.height / 2 + 1, 2, 2);
+          dashCtx.fillRect(this.width / 2 - 2, this.height / 2 - 3, 2, 2);
+          
+          dashCtx.fillStyle = '#ffff00';
+          dashCtx.fillRect(-this.width / 2, -this.height / 2 + 1, 2, 2);
+          dashCtx.fillRect(-this.width / 2, this.height / 2 - 3, 2, 2);
+        }
+        
+        dashCtx.restore();
+      }
+    }
+    
+    // Create dashboard cars
+    const centerX = dashboardCanvas.width / 2;
+    const centerY = dashboardCanvas.height / 2;
+    
+    // Horizontal roads
+    for (let i = 0; i < 10; i++) {
+      // Left to right (top lane)
+      dashboardCars.push(new DashboardCar(
+        Math.random() * dashboardCanvas.width,
+        centerY - 30,
+        0,
+        carColors[Math.floor(Math.random() * carColors.length)]
+      ));
+      
+      // Right to left (bottom lane)
+      dashboardCars.push(new DashboardCar(
+        Math.random() * dashboardCanvas.width,
+        centerY + 30,
+        2,
+        carColors[Math.floor(Math.random() * carColors.length)]
+      ));
+    }
+    
+    // Vertical roads
+    for (let i = 0; i < 10; i++) {
+      // Top to bottom (left lane)
+      dashboardCars.push(new DashboardCar(
+        centerX - 30,
+        Math.random() * dashboardCanvas.height,
+        1,
+        carColors[Math.floor(Math.random() * carColors.length)]
+      ));
+      
+      // Bottom to top (right lane)
+      dashboardCars.push(new DashboardCar(
+        centerX + 30,
+        Math.random() * dashboardCanvas.height,
+        3,
+        carColors[Math.floor(Math.random() * carColors.length)]
+      ));
+    }
+    
+    function drawDashboardCars() {
+      dashboardCars.forEach(car => {
+        car.update();
+        car.draw();
+      });
+    }
+    
+    // Dashboard animation
+    function animateDashboard() {
+      drawDashboard();
+      requestAnimationFrame(animateDashboard);
+    }
+    
+    animateDashboard();
+
+    // Traffic Light Simulator
+    const lanes = [
+      {
+        input: document.getElementById('lane1-input'),
+        red: document.getElementById('lane1-red'),
+        yellow: document.getElementById('lane1-yellow'),
+        green: document.getElementById('lane1-green'),
+        density: 0,
+        state: 'red' // red, yellow, green
+      },
+      {
+        input: document.getElementById('lane2-input'),
+        red: document.getElementById('lane2-red'),
+        yellow: document.getElementById('lane2-yellow'),
+        green: document.getElementById('lane2-green'),
+        density: 0,
+        state: 'red'
+      },
+      {
+        input: document.getElementById('lane3-input'),
+        red: document.getElementById('lane3-red'),
+        yellow: document.getElementById('lane3-yellow'),
+        green: document.getElementById('lane3-green'),
+        density: 0,
+        state: 'red'
+      },
+      {
+        input: document.getElementById('lane4-input'),
+        red: document.getElementById('lane4-red'),
+        yellow: document.getElementById('lane4-yellow'),
+        green: document.getElementById('lane4-green'),
+        density: 0,
+        state: 'red'
+      }
+    ];
+    
+    const emergencyDropdown = document.getElementById('emergency-dropdown');
+    const timerLabel = document.getElementById('timer-label');
+    const startButton = document.getElementById('start-button');
+    
+    let simulationRunning = false;
+    let currentLane = -1;
+    let timeLeft = 10;
+    let simulationInterval;
+    
+    // Update traffic light states
+    function updateTrafficLights() {
+      lanes.forEach((lane, index) => {
+        lane.red.classList.remove('active');
+        lane.yellow.classList.remove('active');
+        lane.green.classList.remove('active');
+        
+        if (lane.state === 'red') {
+          lane.red.classList.add('active');
+        } else if (lane.state === 'yellow') {
+          lane.yellow.classList.add('active');
+        } else if (lane.state === 'green') {
+          lane.green.classList.add('active');
+        }
+      });
+    }
+    
+    // Get lane densities from inputs
+    function updateLaneDensities() {
+      lanes.forEach(lane => {
+        lane.density = parseInt(lane.input.value) || 0;
+      });
+    }
+    
+    // Find the lane with highest density
+    function findHighestDensityLane() {
+      let highestDensity = -1;
+      let highestDensityLane = -1;
+      
+      lanes.forEach((lane, index) => {
+        if (lane.density > highestDensity) {
+          highestDensity = lane.density;
+          highestDensityLane = index;
+        }
+      });
+      
+      return highestDensityLane;
+    }
+    
+    // Check for emergency vehicle
+    function checkEmergency() {
+      const emergencyLane = emergencyDropdown.value;
+      
+      if (emergencyLane !== 'none') {
+        const laneIndex = parseInt(emergencyLane.replace('lane', '')) - 1;
+        return laneIndex;
+      }
+      
+      return -1;
+    }
+    
+    // Start simulation
+    startButton.addEventListener('click', function() {
+      if (simulationRunning) {
+        return;
+      }
+      
+      simulationRunning = true;
+      startButton.disabled = true;
+      
+      // Set all lights to red initially
+      lanes.forEach(lane => {
+        lane.state = 'red';
+      });
+      
+      updateTrafficLights();
+      updateLaneDensities();
+      
+      // Determine first lane to get green light
+      const emergencyLane = checkEmergency();
+      
+      if (emergencyLane >= 0) {
+        currentLane = emergencyLane;
+      } else {
+        currentLane = findHighestDensityLane();
+      }
+      
+      // Set green light for first lane
+      lanes[currentLane].state = 'green';
+      updateTrafficLights();
+      
+      timeLeft = 10;
+      timerLabel.textContent = `⏳ Time Left: ${timeLeft}s`;
+      
+      simulationInterval = setInterval(runSimulation, 1000);
+    });
+    
+    // Run simulation step
+    function runSimulation() {
+      timeLeft--;
+      timerLabel.textContent = `⏳ Time Left: ${timeLeft}s`;
+      
+      if (timeLeft <= 0) {
+        // Change current lane's light to yellow
+        lanes[currentLane].state = 'yellow';
+        updateTrafficLights();
+        
+        timeLeft = 3;
+        timerLabel.textContent = `⏳ Time Left: ${timeLeft}s (Yellow)`;
+        
+        // Set timeout for red light and next lane selection
+        setTimeout(function() {
+          // Change current lane's light to red
+          lanes[currentLane].state = 'red';
+          
+          // Determine next lane
+          const emergencyLane = checkEmergency();
+          
+          if (emergencyLane >= 0) {
+            currentLane = emergencyLane;
+          } else {
+            // Update densities and find next highest
+            updateLaneDensities();
+            currentLane = findHighestDensityLane();
+          }
+          
+          // Set green light for next lane
+          lanes[currentLane].state = 'green';
+          updateTrafficLights();
+          
+          timeLeft = 10;
+          timerLabel.textContent = `⏳ Time Left: ${timeLeft}s`;
+        }, 3000);
+        
+        clearInterval(simulationInterval);
+        
+        // Restart interval after yellow light duration
+        setTimeout(function() {
+          simulationInterval = setInterval(runSimulation, 1000);
+        }, 3000);
+      }
+    }
+    
+    // Reset simulation
+    function resetSimulation() {
+      clearInterval(simulationInterval);
+      simulationRunning = false;
+      startButton.disabled = false;
+      
+      lanes.forEach(lane => {
+        lane.state = 'red';
+      });
+      
+      updateTrafficLights();
+      timerLabel.textContent = `⏳ Time Left: 10s`;
+    }
+    
+    // Initialize traffic lights
+    updateTrafficLights();
+
+   
+    // Initialize particles.js
+    if (typeof particlesJS !== 'undefined') {
+      particlesJS('particles-js', {
+        particles: {
+          number: {
+            value: 50,
+            density: {
+              enable: true,
+              value_area: 800
+            }
+          },
+          color: {
+            value: '#ffffff'
+          },
+          shape: {
+            type: 'circle',
+            stroke: {
+              width: 0,
+              color: '#000000'
+            }
+          },
+          opacity: {
+            value: 0.5,
+            random: false,
+            anim: {
+              enable: false
+            }
+          },
+          size: {
+            value: 3,
+            random: true,
+            anim: {
+              enable: false
+            }
+          },
+          line_linked: {
+            enable: true,
+            distance: 150,
+            color: '#ffffff',
+            opacity: 0.4,
+            width: 1
+          },
+          move: {
+            enable: true,
+            speed: 2,
+            direction: 'none',
+            random: false,
+            straight: false,
+            out_mode: 'out',
+            bounce: false
+          }
+        },
+        interactivity: {
+          detect_on: 'canvas',
+          events: {
+            onhover: {
+              enable: true,
+              mode: 'grab'
+            },
+            onclick: {
+              enable: true,
+              mode: 'push'
+            },
+            resize: true
+          },
+          modes: {
+            grab: {
+              distance: 140,
+              line_linked: {
+                opacity: 1
+              }
+            },
+            push: {
+              particles_nb: 4
+            }
+          }
+        },
+        retina_detect: true
+      });
+    }
+
+    // Custom cursor
+    const customCursor = document.getElementById('custom-cursor');
+    
+    document.addEventListener('mousemove', function(e) {
+      customCursor.style.left = e.clientX + 'px';
+      customCursor.style.top = e.clientY + 'px';
+      customCursor.classList.add('active');
+    });
+    
+    document.addEventListener('mouseout', function() {
+      customCursor.classList.remove('active');
+    });
+    
+    // Hover effect on interactive elements
+    const interactiveElements = document.querySelectorAll('a, button, .feature-card, .process-step, .team-card');
+    
+    interactiveElements.forEach(element => {
+      element.addEventListener('mouseenter', function() {
+        customCursor.classList.add('hover');
+      });
+      
+      element.addEventListener('mouseleave', function() {
+        customCursor.classList.remove('hover');
+      });
+    });
+
+    // Responsive canvas resizing
+    window.addEventListener('resize', function() {
+      // Traffic simulation canvas
+      trafficCanvas.width = trafficSimulation.offsetWidth;
+      trafficCanvas.height = trafficSimulation.offsetHeight;
+      
+      // Dashboard canvas
+      dashboardCanvas.width = dashboardCanvas.parentElement.offsetWidth - 60;
+      dashboardCanvas.height = 500;
+    });
+  </script>
+</body>
+</html>
